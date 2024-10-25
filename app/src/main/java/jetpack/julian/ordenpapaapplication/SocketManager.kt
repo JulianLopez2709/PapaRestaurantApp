@@ -15,7 +15,7 @@ class SocketManager {
 
     init {
         try {
-            socket = IO.socket("http://192.168.0.40:3000")
+            socket = IO.socket("http://:3000")
             onCreate()
         } catch (e:URISyntaxException){
             e.printStackTrace()
@@ -65,13 +65,22 @@ class SocketManager {
         socket.emit("client:update",json)
     }
 
-    fun newFood(data: Food, quantity: Int, text: String){
+    fun newFood(
+        data: Food,
+        quantity: Int,
+        text: String,
+        table: Int = 1,
+        duration: Int = 1,
+        amount: Int,
+        listSalsa: MutableList<String>
+    ){
         val food = Food(
+            duration = duration,
+            table = table,
             title = data.title,
-            description = "${data.description}, note: $text, cantidad : $quantity",
+            description = "${data.description}, note: $text, cantidad : $quantity, Salsas: ${listSalsa.map { it }}",
             isprocess = data.isprocess,
-            img = data.img,
-            price = data.price
+            price = amount
             )
         val json = Gson().toJson(food)
         socket.emit("client:newfood",json)
