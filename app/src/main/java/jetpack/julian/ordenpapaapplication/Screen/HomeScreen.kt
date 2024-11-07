@@ -1,12 +1,14 @@
 package jetpack.julian.ordenpapaapplication.Screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,7 +32,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -47,10 +51,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.R
 import jetpack.julian.ordenpapaapplication.Utils.socketManager
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import jetpack.julian.ordenpapaapplication.ui.theme.Yellow
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -67,45 +73,61 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Food>
         topBar = {
             TopAppBar(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(7.dp),
-                colors = TopAppBarDefaults.topAppBarColors(Color.White),
-                navigationIcon = {
-                    IconButton(
-                        colors = IconButtonDefaults.iconButtonColors(Color.Black),
-                        onClick = { }
+                    .fillMaxWidth(),
+                colors = TopAppBarDefaults.topAppBarColors(Color.Black),
+                title = {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            modifier = Modifier,
-                            tint = Color.Black,
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = null
+                        Image(
+                            modifier = Modifier.height(60.dp),
+                            painter = painterResource(id = R.drawable.lapapalogo02),
+                            contentDescription = "logo papa"
+                        )
+                        Spacer(Modifier.width(15.dp))
+                        Text(
+                            text = "La papa prohibida",
+                            color = Color.Yellow,
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
                         )
                     }
-                },
-                title = {
-                    Image(
-                        modifier = Modifier.height(60.dp),
-                        painter = painterResource(id = R.drawable.lapapalogo),
-                        contentDescription = "logo papa"
-                    )
                 },
                 actions = { }
             )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                Modifier.fillMaxWidth(),
+                containerColor = Color.Black,
+                contentColor = Color.White
+            ) {
                 items.forEachIndexed { index, item ->
+                    val isSelected = selectedItem == index
                     NavigationBarItem(
                         icon = {
                             Icon(
-                                if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
-                                contentDescription = item
+                                imageVector = if (isSelected) selectedIcons[index] else unselectedIcons[index],
+                                contentDescription = item,
+                                tint = if (isSelected) Color.White else Color.Gray
                             )
                         },
-                        label = { Text(item, color = Color.White) },
+                        label = {
+                            Text(
+                                text = item,
+                                color = if (isSelected) Yellow else Color.Gray,
+                                style = if (isSelected) MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+                                else MaterialTheme.typography.bodyMedium
+                            )
+                        },
                         selected = selectedItem == index,
-                        onClick = { selectedItem = index }
+                        onClick = { selectedItem = index },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (isSelected) Yellow else Color.Black
+                        )
                     )
                 }
             }
@@ -156,11 +178,14 @@ fun CardFood(item: Food, onClick: (() -> Unit)) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray
                 )
                 Text(
                     text = item.description,
                     style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 15.sp,
                     color = Color.Gray
                 )
                 val format = NumberFormat.getNumberInstance(Locale.getDefault()).format(item.price)

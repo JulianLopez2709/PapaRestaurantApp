@@ -1,9 +1,14 @@
 package jetpack.julian.ordenpapaapplication.Screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,15 +22,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,8 +57,12 @@ import java.text.NumberFormat
 import java.util.Locale
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NewScreen(item: Food, navController: NavHostController) {
+
+    var selected by remember { mutableStateOf(false) }
+
 
     var price by remember {
         mutableIntStateOf(item.price)
@@ -59,12 +72,39 @@ fun NewScreen(item: Food, navController: NavHostController) {
     var note by remember { mutableStateOf(TextFieldValue("")) }
 
     var expanded by remember { mutableStateOf(false) }
+    var isLlevar by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("1") }
-    val options = listOf("1", "2", "3", "4", "5")
+    val options = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
 
 
-    val salsas = listOf("Mayonesa", "Ketchup", "Mostaza", "BBQ")
-    val selectedSalsas = remember { mutableStateListOf(false, false, false, false) }
+    val salsas = listOf(
+        "Chipote",
+        "Leña",
+        "Prohida",
+        "Dulce de Maiz",
+        "Mostaneza",
+        "Salsa Rosada",
+        "Showy Ajo",
+        "Piña",
+        "BBQ",
+        "Queso Cheddar",
+        "Tomate"
+    )
+    val selectedSalsas = remember {
+        mutableStateListOf(
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -95,7 +135,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
             Text(
                 text = "Nuevo Pedido",
                 color = Color.White,
-                fontSize = 20.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -120,7 +160,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, text = item.title)
+                    Text(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, text = item.title)
                     Text(
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
@@ -134,33 +174,40 @@ fun NewScreen(item: Food, navController: NavHostController) {
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Spacer(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(Color.Yellow),
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+//                    Spacer(
+//                        modifier = Modifier
+//                            .width(2.dp)
+//                            .background(Color.Yellow),
+//                    )
                     Text(text = "Descripción: ${item.description}")
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
+                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .background(Color.DarkGray)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Mesa ")
                     Button(modifier = Modifier, onClick = { expanded = !expanded }) {
-                        Text(text = selectedOption)
+                        Row {
+                            Text(text = "Mesa ")
+                            Text(text = selectedOption)
+                        }
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         options.forEach { option ->
                             DropdownMenuItem(
                                 onClick = {
-                                    selectedOption = option  // Guarda la opción seleccionada
-                                    expanded = false  // Cierra el menú después de la selección
+                                    selectedOption = option
+                                    expanded = false
                                 },
                                 text = { Text(text = option) }
                             )
@@ -170,38 +217,82 @@ fun NewScreen(item: Food, navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    salsas.forEachIndexed { index, salsa ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = selectedSalsas[index],
-                                onCheckedChange = { isChecked ->
-                                    selectedSalsas[index] = isChecked
-                                }
+                    Text("Topping")
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalArrangement = Arrangement.spacedBy(3.dp),
+                        maxItemsInEachRow = 4,
+                        overflow = FlowRowOverflow.Clip
+                    ) {
+                        salsas.forEachIndexed { index, salsa ->
+                            FilterChip(
+                                onClick = { selectedSalsas[index] = !selectedSalsas[index] },
+                                label = { Text(salsa) },
+                                selected = selectedSalsas[index],
+                                leadingIcon = if (selectedSalsas[index]) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Done,
+                                            contentDescription = "Done icon",
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                        )
+                                    }
+                                } else {
+                                    null
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = if (selectedSalsas[index]) Color.Yellow else Color.Transparent,
+                                )
                             )
-                            Text(fontSize = 10.sp, text = salsa)
                         }
                     }
+
                 }
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Nota
-                Text("Nota:")
-                TextField(
+                Text("Nota")
+                OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
                     modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Gray,
+                    ),
                     placeholder = { Text("Escribe tu nota aquí") }
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
 
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            border = BorderStroke(1.dp, Color.Gray),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("¿Es para Llevar?", fontWeight = FontWeight.Bold)
+                        Checkbox(checked = isLlevar, onCheckedChange = { isLlevar = !isLlevar })
+                    }
+                }
+
+                Spacer(Modifier.height(5.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -241,9 +332,9 @@ fun NewScreen(item: Food, navController: NavHostController) {
                 Button(modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(Color.Black),
                     onClick = {
-                        val listSelectedSalsa:MutableList<String> = mutableListOf()
+                        val listSelectedSalsa: MutableList<String> = mutableListOf()
                         selectedSalsas.forEachIndexed { index, salsa ->
-                            if (salsa){
+                            if (salsa) {
                                 listSelectedSalsa.add(salsas[index])
                             }
                         }

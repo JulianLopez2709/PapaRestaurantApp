@@ -26,8 +26,11 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -53,22 +56,41 @@ import jetpack.julian.ordenpapaapplication.core.navigation.NewFood
 import jetpack.julian.ordenpapaapplication.model.food.Food
 
 @Composable
-fun MenuScreen( navHostController: NavHostController) {
+fun MenuScreen(navHostController: NavHostController) {
     val listFood = Utils.menu
+    var searchText by remember { mutableStateOf("") }
+
+    val filteredList = listFood.filter { foodItem ->
+        foodItem.title.contains(searchText, ignoreCase = true)
+    }
+
     Column(
         modifier = Modifier.padding(10.dp)
     ) {
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            label = { Text("Buscar comida") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor  = Color.Black,
+                unfocusedTextColor = Color.Gray,
+                )
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         LazyColumn {
-            items(listFood){
-                CardFood(item = it, onClick = {
-                    val jsonString =  Gson().toJson(it)
+            items(filteredList) { foodItem ->
+                CardFood(item = foodItem, onClick = {
+                    val jsonString = Gson().toJson(foodItem)
                     navHostController.navigate(NewFood(jsonString))
                 })
             }
         }
     }
-
 }
+
 
 
 @Composable
