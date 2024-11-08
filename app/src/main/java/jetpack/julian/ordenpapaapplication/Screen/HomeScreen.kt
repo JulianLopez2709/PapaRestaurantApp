@@ -56,6 +56,7 @@ import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.R
 import jetpack.julian.ordenpapaapplication.Utils.socketManager
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import jetpack.julian.ordenpapaapplication.ui.theme.Principal
 import jetpack.julian.ordenpapaapplication.ui.theme.Yellow
 import java.text.NumberFormat
 import java.util.Locale
@@ -74,7 +75,7 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Food>
             TopAppBar(
                 modifier = Modifier
                     .fillMaxWidth(),
-                colors = TopAppBarDefaults.topAppBarColors(Color.Black),
+                colors = TopAppBarDefaults.topAppBarColors(Principal),
                 title = {
                     Row(
                         Modifier.fillMaxWidth(),
@@ -102,7 +103,7 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Food>
         bottomBar = {
             NavigationBar(
                 Modifier.fillMaxWidth(),
-                containerColor = Color.Black,
+                containerColor = Principal,
                 contentColor = Color.White
             ) {
                 items.forEachIndexed { index, item ->
@@ -185,7 +186,8 @@ fun CardFood(item: Food, onClick: (() -> Unit)) {
                 Text(
                     text = item.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 15.sp,
+                    fontSize = 12.sp,
+                    lineHeight = 12.sp,
                     color = Color.Gray
                 )
                 val format = NumberFormat.getNumberInstance(Locale.getDefault()).format(item.price)

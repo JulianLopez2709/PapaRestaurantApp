@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -70,6 +71,9 @@ fun MenuScreen(navHostController: NavHostController) {
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
+            leadingIcon = {
+                Icon(tint = Color.Gray, imageVector = Icons.Outlined.Search, contentDescription = null)
+            },
             label = { Text("Buscar comida") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(

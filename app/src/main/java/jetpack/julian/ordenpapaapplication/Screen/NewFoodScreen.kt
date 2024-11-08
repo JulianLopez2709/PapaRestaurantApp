@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -46,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.Utils.socketManager
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import jetpack.julian.ordenpapaapplication.ui.theme.Gray
+import jetpack.julian.ordenpapaapplication.ui.theme.Principal
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -109,15 +111,16 @@ fun NewScreen(item: Food, navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Principal)
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(25.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(end = 25.dp, start = 25.dp, top = 10.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(
+            /*Button(
                 onClick = { navController.popBackStack() },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
@@ -130,14 +133,41 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     tint = Color.Gray,
                     modifier = Modifier.size(24.dp)
                 )
-            }
-            Spacer(modifier = Modifier.width(7.dp))
+            }*/
             Text(
                 text = "Nuevo Pedido",
                 color = Color.White,
-                fontSize = 30.sp,
+                fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
+
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                    onClick = { expanded = !expanded },
+                    border = null,
+                    shape = RectangleShape
+                ) {
+                    Row {
+                        Text(text = "Mesa ", color = Color.Black)
+                        Text(text = selectedOption, color = Color.Black)
+                    }
+                }
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    options.forEach { option ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedOption = option
+                                expanded = false
+                            },
+                            text = { Text(text = option) }
+                        )
+                    }
+                }
+            }
         }
 
         Box(
@@ -152,9 +182,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     .fillMaxHeight(1f)
                     .fillMaxWidth()
                     .padding(25.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             ) {
-
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -164,23 +192,11 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     Text(
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        text = "${item.duration}min"
+                        text = "${item.duration * quantity}min"
                     )
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
-
-
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-//                    Spacer(
-//                        modifier = Modifier
-//                            .width(2.dp)
-//                            .background(Color.Yellow),
-//                    )
-                    Text(text = "Descripción: ${item.description}")
-                }
 
                 Spacer(modifier = Modifier.height(3.dp))
                 Spacer(
@@ -191,29 +207,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(modifier = Modifier, onClick = { expanded = !expanded }) {
-                        Row {
-                            Text(text = "Mesa ")
-                            Text(text = selectedOption)
-                        }
-                    }
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        options.forEach { option ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedOption = option
-                                    expanded = false
-                                },
-                                text = { Text(text = option) }
-                            )
-                        }
-                    }
-                }
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -221,18 +215,18 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Topping")
+                    Text("Topping", fontWeight = FontWeight.SemiBold)
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalArrangement = Arrangement.spacedBy(3.dp),
+                        verticalArrangement = Arrangement.spacedBy(0.dp),
                         maxItemsInEachRow = 4,
                         overflow = FlowRowOverflow.Clip
                     ) {
                         salsas.forEachIndexed { index, salsa ->
                             FilterChip(
                                 onClick = { selectedSalsas[index] = !selectedSalsas[index] },
-                                label = { Text(salsa) },
+                                label = { Text(salsa, color = Color.Black) },
                                 selected = selectedSalsas[index],
                                 leadingIcon = if (selectedSalsas[index]) {
                                     {
@@ -262,7 +256,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().weight(1f),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Gray,
@@ -270,7 +264,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     placeholder = { Text("Escribe tu nota aquí") }
                 )
 
-                Spacer(Modifier.weight(1f))
+                Spacer(Modifier.height(8.dp))
 
                 Box(
                     modifier = Modifier
@@ -311,25 +305,51 @@ fun NewScreen(item: Food, navController: NavHostController) {
                         )
                     }
                     // Cantidad
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                    Box(
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(
+                                Gray
+                            )
+                            .padding(8.dp)
                     ) {
-                        Button(
-                            onClick = { if (quantity > 1) quantity-- },
-                            modifier = Modifier.padding(end = 8.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("-")
-                        }
-                        Text(text = "$quantity", modifier = Modifier.padding(horizontal = 8.dp))
-                        Button(onClick = { quantity++ }) {
-                            Text("+")
+                            Button(
+                                onClick = { if (quantity > 1) quantity-- },
+                                shape = CircleShape,
+                                colors = ButtonDefaults.buttonColors(Color.White),
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Text("-", color = Color.Black, fontWeight = FontWeight.Bold)
+                            }
+                            Text(
+                                text = "$quantity",
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                fontWeight = FontWeight.Bold
+                            )
+                            Button(
+                                onClick = { quantity++ },
+                                shape = CircleShape,
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Text("+", color = Color.Black, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
+
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Button(modifier = Modifier.fillMaxWidth(),
+                Button(modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(15.dp)),
+                    shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(Color.Black),
                     onClick = {
                         val listSelectedSalsa: MutableList<String> = mutableListOf()
@@ -343,8 +363,8 @@ fun NewScreen(item: Food, navController: NavHostController) {
                             data = item,
                             listSalsa = listSelectedSalsa,
                             amount = item.price * quantity,
-                            text = note.text,
-                            duration = item.duration,
+                            text = "${note.text} ${if(isLlevar)"Es Para LLevar" else ""}",
+                            duration = item.duration * quantity,
                             table = selectedOption.toInt(),
                             quantity = quantity
                         )
