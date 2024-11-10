@@ -15,7 +15,7 @@ class SocketManager {
 
     init {
         try {
-            socket = IO.socket("http://")
+            socket = IO.socket("http://:3000")
             onCreate()
         } catch (e:URISyntaxException){
             e.printStackTrace()

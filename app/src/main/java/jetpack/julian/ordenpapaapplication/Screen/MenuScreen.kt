@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -61,20 +62,22 @@ fun MenuScreen(navHostController: NavHostController) {
     var searchText by remember { mutableStateOf("") }
 
     val filteredList = listFood.filter { foodItem ->
-        foodItem.title.contains(searchText, ignoreCase = true)
+        foodItem.title.uppercase().contains(searchText.uppercase(), ignoreCase = true)
     }
 
     Column(
-        modifier = Modifier.padding(10.dp)
+        modifier = Modifier.fillMaxSize().padding(10.dp)
     ) {
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
+            leadingIcon = {
+                Icon(tint = Color.Gray, imageVector = Icons.Outlined.Search, contentDescription = null)
+            },
             label = { Text("Buscar comida") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor  = Color.Black,
-                unfocusedTextColor = Color.Gray,
+                focusedTextColor  = Color.Gray,
                 )
         )
 

@@ -10,6 +10,8 @@ data class Food(
     val price:Int,
     val img:String? = null,
     val isprocess : Boolean = true,
+    val priceForTwo: Int? = null,
     val table : Int ?= null,
     val duration:Int
 )
+
