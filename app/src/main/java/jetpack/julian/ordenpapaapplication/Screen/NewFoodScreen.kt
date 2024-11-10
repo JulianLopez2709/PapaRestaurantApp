@@ -19,8 +19,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -33,6 +35,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -74,6 +77,8 @@ fun NewScreen(item: Food, navController: NavHostController) {
     var note by remember { mutableStateOf(TextFieldValue("")) }
 
     var expanded by remember { mutableStateOf(false) }
+    var isForTwo by remember { mutableStateOf(false) }
+
     var isLlevar by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("1") }
     val options = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
@@ -108,10 +113,13 @@ fun NewScreen(item: Food, navController: NavHostController) {
         )
     }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Principal)
+            //.verticalScroll(scrollState)
     ) {
         Row(
             Modifier
@@ -196,18 +204,14 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     )
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(12.dp))
 
-                Spacer(modifier = Modifier.height(3.dp))
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(2.dp)
                         .background(Color.DarkGray)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-
-
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -215,7 +219,39 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Topping", fontWeight = FontWeight.SemiBold)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Salsas", fontWeight = FontWeight.SemiBold)
+                        if (item.priceForTwo != null) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(
+                                        Gray
+                                    )
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(vertical = 3.dp, horizontal = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text("Para 2", fontWeight = FontWeight.Bold)
+                                    Spacer(Modifier.width(5.dp))
+                                    Switch(
+                                        isForTwo, onCheckedChange = { check ->
+                                            isForTwo = check
+                                            if (isForTwo) price = item.priceForTwo else price =
+                                                item.price
+                                        },
+                                        modifier = Modifier.size(50.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -256,7 +292,9 @@ fun NewScreen(item: Food, navController: NavHostController) {
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Gray,
@@ -300,7 +338,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
                             fontSize = 25.sp, fontWeight = FontWeight.ExtraBold, text = "$${
                                 NumberFormat.getInstance(
                                     Locale.getDefault()
-                                ).format(item.price * quantity)
+                                ).format(price * quantity)
                             }"
                         )
                     }
@@ -362,8 +400,8 @@ fun NewScreen(item: Food, navController: NavHostController) {
                         socketManager.newFood(
                             data = item,
                             listSalsa = listSelectedSalsa,
-                            amount = item.price * quantity,
-                            text = "${note.text} ${if(isLlevar)"Es Para LLevar" else ""}",
+                            amount = price * quantity,
+                            text = "${note.text} ${if (isLlevar) "Es Para LLevar" else ""}",
                             duration = item.duration * quantity,
                             table = selectedOption.toInt(),
                             quantity = quantity

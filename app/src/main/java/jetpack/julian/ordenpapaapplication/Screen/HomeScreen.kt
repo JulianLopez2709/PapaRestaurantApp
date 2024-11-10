@@ -56,6 +56,7 @@ import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.R
 import jetpack.julian.ordenpapaapplication.Utils.socketManager
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import jetpack.julian.ordenpapaapplication.ui.theme.BgDark
 import jetpack.julian.ordenpapaapplication.ui.theme.Principal
 import jetpack.julian.ordenpapaapplication.ui.theme.Yellow
 import java.text.NumberFormat
@@ -134,7 +135,7 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Food>
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box(modifier = Modifier.padding(innerPadding).background(BgDark)) {
             when (selectedItem) {
                 0 -> OrderScreen(modifier = Modifier.padding(innerPadding), orders= orders)
                 1 -> MenuScreen(navController)

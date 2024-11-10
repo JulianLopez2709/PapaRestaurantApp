@@ -62,11 +62,11 @@ fun MenuScreen(navHostController: NavHostController) {
     var searchText by remember { mutableStateOf("") }
 
     val filteredList = listFood.filter { foodItem ->
-        foodItem.title.contains(searchText, ignoreCase = true)
+        foodItem.title.uppercase().contains(searchText.uppercase(), ignoreCase = true)
     }
 
     Column(
-        modifier = Modifier.padding(10.dp)
+        modifier = Modifier.fillMaxSize().padding(10.dp)
     ) {
         OutlinedTextField(
             value = searchText,
@@ -77,8 +77,7 @@ fun MenuScreen(navHostController: NavHostController) {
             label = { Text("Buscar comida") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor  = Color.Black,
-                unfocusedTextColor = Color.Gray,
+                focusedTextColor  = Color.Gray,
                 )
         )
 
