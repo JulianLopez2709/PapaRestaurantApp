@@ -4,14 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Food(
-    val id: Int = 0,
-    val title:String,
-    val description:String,
-    val price:Int,
-    val img:String? = null,
-    val isprocess : Boolean = true,
-    val priceForTwo: Int? = null,
-    val table : Int ?= null,
-    val duration:Int
+    val food_id: String,
+    val description: String,
+    val price: Double,
+    val name: String,
+    val type: String,
+    val img: String ? = null,
 )
 

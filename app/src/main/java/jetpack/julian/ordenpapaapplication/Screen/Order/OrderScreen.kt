@@ -1,12 +1,12 @@
-package jetpack.julian.ordenpapaapplication.Screen
+package jetpack.julian.ordenpapaapplication.Screen.Order
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -18,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -26,22 +25,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import jetpack.julian.ordenpapaapplication.Utils.socketManager
+import jetpack.julian.ordenpapaapplication.Screen.Menu.component.CardFood
+import jetpack.julian.ordenpapaapplication.Screen.Order.component.CardOrder
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingResponde
+import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
 
 @Composable
-fun OrderScreen(modifier: Modifier = Modifier, orders: MutableState<List<Food>>) {
+fun OrderScreen(modifier: Modifier = Modifier, orders: MutableState<List<OrderPreparingRespondeItem>>) {
     val foodsState = remember { mutableStateListOf<Food>() }
 
-    LaunchedEffect(Unit) {
+    /*LaunchedEffect(Unit) {
         socketManager.setupListeners { foods ->
             foodsState.clear()
             foodsState.addAll(foods.filter { it.isprocess })
         }
-    }
+    }*/
 
     Column {
-        val filteredOrders = orders.value.filter { it.isprocess }
+        val filteredOrders = orders.value
+        println(filteredOrders)
+        println("list order "+ filteredOrders)
 
         if (filteredOrders.isEmpty()) {
 
@@ -75,14 +79,11 @@ fun OrderScreen(modifier: Modifier = Modifier, orders: MutableState<List<Food>>)
 
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
+                modifier = Modifier.fillMaxSize().padding(top = 50.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(filteredOrders) { item ->
-                    CardFood(item) {}
-                    Spacer(modifier = Modifier.height(8.dp))
+                    CardOrder (item) {}
                 }
             }
         }

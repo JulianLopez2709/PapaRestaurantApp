@@ -1,72 +1,50 @@
-package jetpack.julian.ordenpapaapplication.Screen
+package jetpack.julian.ordenpapaapplication.Screen.Menu
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
-import jetpack.julian.ordenpapaapplication.R
-import jetpack.julian.ordenpapaapplication.Utils
-import jetpack.julian.ordenpapaapplication.Utils.socketManager
+import jetpack.julian.ordenpapaapplication.Screen.Menu.component.CardFood
 import jetpack.julian.ordenpapaapplication.core.navigation.NewFood
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import jetpack.julian.ordenpapaapplication.ui.theme.BgDark
 
 @Composable
-fun MenuScreen(navHostController: NavHostController) {
-    val listFood = Utils.menu
+fun MenuScreen(navHostController: NavHostController, menu: LiveData<List<Food>>) {
+    val listFood = menu.value ?: emptyList()
+    println("list desde el menu"+listFood)
     var searchText by remember { mutableStateOf("") }
 
     val filteredList = listFood.filter { foodItem ->
-        foodItem.title.uppercase().contains(searchText.uppercase(), ignoreCase = true)
+        foodItem.name.uppercase().contains(searchText.uppercase(), ignoreCase = true)
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(10.dp)
+        modifier = Modifier.fillMaxSize().background(BgDark)
     ) {
         OutlinedTextField(
             value = searchText,
@@ -83,7 +61,10 @@ fun MenuScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        LazyColumn {
+        LazyVerticalGrid (
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize()
+        )  {
             items(filteredList) { foodItem ->
                 CardFood(item = foodItem, onClick = {
                     val jsonString = Gson().toJson(foodItem)
@@ -102,7 +83,7 @@ fun ShowModal(item: Food, onDismiss: () -> Unit) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Detalles de ${item.title}") },
+        title = { Text("Detalles de ${item.name}") },
         text = {
 
         },

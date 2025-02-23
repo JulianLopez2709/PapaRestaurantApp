@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -35,7 +34,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,7 +52,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import jetpack.julian.ordenpapaapplication.Utils.socketManager
 import jetpack.julian.ordenpapaapplication.model.food.Food
 import jetpack.julian.ordenpapaapplication.ui.theme.Gray
 import jetpack.julian.ordenpapaapplication.ui.theme.Principal
@@ -70,7 +67,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
 
 
     var price by remember {
-        mutableIntStateOf(item.price)
+        mutableIntStateOf(item.price.toInt())
     }
 
     var quantity by remember { mutableStateOf(1) }
@@ -196,11 +193,11 @@ fun NewScreen(item: Food, navController: NavHostController) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, text = item.title)
+                    Text(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, text = item.name)
                     Text(
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        text = "${item.duration * quantity}min"
+                        text = "min"
                     )
                 }
 
@@ -225,7 +222,8 @@ fun NewScreen(item: Food, navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Salsas", fontWeight = FontWeight.SemiBold)
-                        if (item.priceForTwo != null) {
+
+                        /*if (item.priceForTwo != null) {
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(10.dp))
@@ -250,7 +248,7 @@ fun NewScreen(item: Food, navController: NavHostController) {
                                     )
                                 }
                             }
-                        }
+                        }*/
                     }
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
@@ -397,15 +395,14 @@ fun NewScreen(item: Food, navController: NavHostController) {
                             }
                         }
 
-                        socketManager.newFood(
+                        /*socketManager.newFood(
                             data = item,
                             listSalsa = listSelectedSalsa,
                             amount = price * quantity,
                             text = "${note.text} ${if (isLlevar) "Es Para LLevar" else ""}",
-                            duration = item.duration * quantity,
                             table = selectedOption.toInt(),
                             quantity = quantity
-                        )
+                        )*/
                         navController.popBackStack()
                     }
                 ) {

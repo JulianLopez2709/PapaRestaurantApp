@@ -52,6 +52,9 @@ android {
 
 dependencies {
 
+    implementation (libs.retrofit2.retrofit)
+    implementation (libs.converter.gson)
+
     implementation ("androidx.core:core-splashscreen:1.0.1")
 
     //gson

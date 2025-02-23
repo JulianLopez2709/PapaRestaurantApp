@@ -1,12 +1,13 @@
-package jetpack.julian.ordenpapaapplication
+package jetpack.julian.ordenpapaapplication.core.socket
 
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.socket.client.Socket
 import io.socket.client.IO
-import io.socket.emitter.Emitter
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingResponde
+import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
 import java.net.URISyntaxException
 
 
@@ -15,7 +16,7 @@ class SocketManager {
 
     init {
         try {
-            socket = IO.socket("http://:3000")
+            socket = IO.socket("http://192.168.56.1:3000")
             onCreate()
         } catch (e:URISyntaxException){
             e.printStackTrace()
@@ -36,6 +37,22 @@ class SocketManager {
 
         socket.connect()
    }
+
+    fun emitOrder(callback: (List<OrderPreparingRespondeItem>) -> Unit ) {
+        socket.on("server:loadOrder") { args ->
+            if (args.isNotEmpty()) {
+                val data = args[0]
+                println(data)
+                data?.let {
+                    val listFood: List<OrderPreparingRespondeItem> =
+                        Gson().fromJson(it.toString(), object : TypeToken<List<OrderPreparingRespondeItem>>() {}.type)
+                    callback(listFood)
+                }
+            } else {
+                Log.e("tag", "No data received")
+            }
+        }
+    }
 
     fun setupListeners(callback:(List<Food>)->Unit ) {
         socket.on("server:loadfood") { args ->
@@ -65,7 +82,7 @@ class SocketManager {
         socket.emit("client:update",json)
     }
 
-    fun newFood(
+    /*fun newFood(
         data: Food,
         quantity: Int,
         text: String,
@@ -78,7 +95,7 @@ class SocketManager {
             duration = duration,
             table = table,
             title = data.title,
-            description = "${data.description}, note: $text, cantidad : $quantity, Salsas: ${listSalsa.map { it }}",
+            description = "${data.description} > $text > $quantity > $listSalsa",
             isprocess = data.isprocess,
             price = amount
             )
@@ -101,5 +118,5 @@ class SocketManager {
 
     fun testSocket(txt : String){
         socket.emit("client:test",txt)
-    }
+    }*/
 }
