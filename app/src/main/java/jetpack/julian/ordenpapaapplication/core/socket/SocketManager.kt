@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.socket.client.Socket
 import io.socket.client.IO
+import jetpack.julian.ordenpapaapplication.core.Utils
 import jetpack.julian.ordenpapaapplication.model.food.Food
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingResponde
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
@@ -16,7 +17,7 @@ class SocketManager {
 
     init {
         try {
-            socket = IO.socket("http://192.168.56.1:3000")
+            socket = IO.socket(Utils.BASE_URL)
             onCreate()
         } catch (e:URISyntaxException){
             e.printStackTrace()

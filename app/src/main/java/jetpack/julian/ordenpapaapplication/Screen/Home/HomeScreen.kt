@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +56,7 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Order
     val items = listOf("Home", "Menu")
     val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Star)
     val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.Star)
+    var showTableDialog by remember { mutableStateOf(false) }
     println("order list "+orders.value)
 
     Scaffold(
@@ -86,7 +88,8 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Order
                         )
                     }
                 },
-                actions = { }
+                actions = {
+                }
             )
         },
         floatingActionButton = {
@@ -94,9 +97,7 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Order
                 shape = CircleShape,
                 containerColor = Color.Yellow,
                 onClick = {
-                    Log.d("NAVIGATION", "Se hizo click en el botón flotante")
-                    println("Entra al click del float")
-                    navController.navigate(Menu)
+                    showTableDialog = true
                 }
             ) {
                 Icon(
@@ -111,7 +112,16 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Order
                 .padding(innerPadding)
                 .background(BgDark), orders = orders)
     }
+
+
+    if (showTableDialog) {
+        TableSelectionDialog(){ table ->
+            println("Menu"+table)
+            //navController.navigate(Menu(table))
+        }
+    }
 }
+
 
 
 

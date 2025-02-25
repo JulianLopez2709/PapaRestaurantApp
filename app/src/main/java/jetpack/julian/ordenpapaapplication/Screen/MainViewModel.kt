@@ -10,8 +10,7 @@ import jetpack.julian.ordenpapaapplication.model.food.Food
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    private val _foods: MutableLiveData<List<Food>>
-        get() = MutableLiveData<List<Food>>()
+    private val _foods = MutableLiveData<List<Food>>()
     val foods: LiveData<List<Food>> = _foods
 
     fun getMenu() {

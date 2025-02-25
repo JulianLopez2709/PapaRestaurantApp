@@ -52,6 +52,9 @@ android {
 
 dependencies {
 
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+
     implementation (libs.retrofit2.retrofit)
     implementation (libs.converter.gson)
 

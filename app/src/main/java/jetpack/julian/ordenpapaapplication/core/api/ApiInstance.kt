@@ -1,11 +1,12 @@
 package jetpack.julian.ordenpapaapplication.core.api
 
+import jetpack.julian.ordenpapaapplication.core.Utils
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiInstance {
-    private const val BASE_URL = "http://192.168.56.1:3000"
+    private val URL = Utils.BASE_URL
 
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder().build()
@@ -13,7 +14,7 @@ object ApiInstance {
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient)
             .build()

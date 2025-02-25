@@ -44,9 +44,6 @@ fun OrderScreen(modifier: Modifier = Modifier, orders: MutableState<List<OrderPr
 
     Column {
         val filteredOrders = orders.value
-        println(filteredOrders)
-        println("list order "+ filteredOrders)
-
         if (filteredOrders.isEmpty()) {
 
             Spacer(
@@ -83,7 +80,9 @@ fun OrderScreen(modifier: Modifier = Modifier, orders: MutableState<List<OrderPr
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(filteredOrders) { item ->
-                    CardOrder (item) {}
+                    CardOrder (item) {
+
+                    }
                 }
             }
         }

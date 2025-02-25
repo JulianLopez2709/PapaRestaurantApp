@@ -2,10 +2,18 @@ package jetpack.julian.ordenpapaapplication.core
 
 import jetpack.julian.ordenpapaapplication.core.socket.SocketManager
 import jetpack.julian.ordenpapaapplication.model.food.Food
+import java.text.NumberFormat
+import java.util.Locale
 
 object Utils {
     var useFood: List<Food> = emptyList()
+    val BASE_URL = "http://192.168.122.142:3000"
     lateinit var socketManager: SocketManager
+
+    fun formatPrice (price:Double): String {
+        return NumberFormat.getNumberInstance(Locale.getDefault()).format(price)
+    }
+
     val menu: List<Food> = listOf(
 //        Food(
 //            duration = 15,

@@ -4,11 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import jetpack.julian.ordenpapaapplication.core.Utils.socketManager
 import jetpack.julian.ordenpapaapplication.core.navigation.NavigationWrapper
 import jetpack.julian.ordenpapaapplication.core.socket.SocketManager
+import jetpack.julian.ordenpapaapplication.model.food.Food
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingResponde
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
 import jetpack.julian.ordenpapaapplication.ui.theme.OrdenPapaApplicationTheme
@@ -24,16 +30,21 @@ class MainActivity : ComponentActivity() {
         socketManager.emitOrder(){
             orders.value = it
         }
-        foodViewModel.getMenu()
         setContent {
-            val menu = foodViewModel.foods
-
-            println("lista desde main "+ menu.value)
+            val menu by foodViewModel.foods.observeAsState(emptyList())
 
             OrdenPapaApplicationTheme {
                 NavigationWrapper(orders, menu)
             }
         }
+
+
+        foodViewModel.getMenu()
+
+    }
+
+    private fun initViewModel() {
+
     }
 
     override fun onDestroy() {

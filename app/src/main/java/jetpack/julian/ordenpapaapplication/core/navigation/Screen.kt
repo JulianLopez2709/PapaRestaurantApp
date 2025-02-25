@@ -1,23 +1,30 @@
 package jetpack.julian.ordenpapaapplication.core.navigation
 
-import jetpack.julian.ordenpapaapplication.model.food.Food
 import kotlinx.serialization.Serializable
 
 @Serializable
 object Home;
 
 @Serializable
-object Menu;
+data class Menu(
+    val table: Int
+)
+
+@Serializable
+object Shop;
 
 @Serializable
 object Order;
+
+@Serializable
+object OrderDetail;
 
 @Serializable
 object Build;
 
 @Serializable
 data class NewFood(
-    val food : String
+    val food: String
 );
 
 
