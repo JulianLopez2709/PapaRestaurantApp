@@ -7,7 +7,8 @@ object Home;
 
 @Serializable
 data class Menu(
-    val table: Int
+    val table: Int?,
+    val orderId:Int?
 )
 
 @Serializable
@@ -17,7 +18,9 @@ object Shop;
 object Order;
 
 @Serializable
-object OrderDetail;
+data class OrderDetail(
+    val detail : String
+);
 
 @Serializable
 object Build;

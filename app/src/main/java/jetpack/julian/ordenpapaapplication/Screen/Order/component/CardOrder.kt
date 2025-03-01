@@ -28,7 +28,7 @@ import jetpack.julian.ordenpapaapplication.core.Utils
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
 
 @Composable
-fun CardOrder(item: OrderPreparingRespondeItem, onClick: ((OrderPreparingRespondeItem) -> Unit)) {
+fun CardOrder(item: OrderPreparingRespondeItem, onClick: (OrderPreparingRespondeItem) -> Unit) {
     Card(
         elevation = CardDefaults.elevatedCardElevation(10.dp),
         modifier = Modifier
@@ -54,7 +54,7 @@ fun CardOrder(item: OrderPreparingRespondeItem, onClick: ((OrderPreparingRespond
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "#${item.order_id}",
+                    text = "Orden #${item.order_id}",
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
@@ -62,7 +62,7 @@ fun CardOrder(item: OrderPreparingRespondeItem, onClick: ((OrderPreparingRespond
                 )
 
                 Text(
-                    text = "Mesa ${item.order_id}",
+                    text = "Mesa ${item.table}",
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,

@@ -52,6 +52,9 @@ android {
 
 dependencies {
 
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
+
+
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
 

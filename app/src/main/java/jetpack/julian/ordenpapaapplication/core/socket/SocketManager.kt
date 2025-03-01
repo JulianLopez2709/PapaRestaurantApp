@@ -5,7 +5,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.socket.client.Socket
 import io.socket.client.IO
+import jetpack.julian.ordenpapaapplication.core.AddFoodRequest
 import jetpack.julian.ordenpapaapplication.core.Utils
+import jetpack.julian.ordenpapaapplication.core.orderNew
+import jetpack.julian.ordenpapaapplication.core.patch
 import jetpack.julian.ordenpapaapplication.model.food.Food
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingResponde
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
@@ -39,6 +42,46 @@ class SocketManager {
         socket.connect()
    }
 
+
+    /**
+     * {
+     *   "user_id": 1,
+     *   "foods": [
+     *     {
+     *       "food_id": 2,
+     *       "extras": [
+     *         "De la casa",
+     *         "Chicharon"
+     *       ]
+     *     },
+     *     {
+     *       "food_id": 4,
+     *       "extras": [
+     *         "queso"
+     *       ]
+     *     }
+     *   ]
+     * }
+     */
+
+
+    fun newOrder(data: orderNew){
+        val json = Gson().toJson(data)
+        socket.emit("client:newOrder",json)
+    }
+
+
+    fun addFood(data  : AddFoodRequest){
+        val json = Gson().toJson(data)
+        socket.emit("client:addOrder", json)
+    }
+
+
+    fun patchStatus(data  : patch){
+        val json = Gson().toJson(data)
+        socket.emit("client:patchStatus", json)
+    }
+
     fun emitOrder(callback: (List<OrderPreparingRespondeItem>) -> Unit ) {
         socket.on("server:loadOrder") { args ->
             if (args.isNotEmpty()) {
@@ -55,24 +98,6 @@ class SocketManager {
         }
     }
 
-    fun setupListeners(callback:(List<Food>)->Unit ) {
-        socket.on("server:loadfood") { args ->
-            Log.e("tag", "load food: ${args[0]}")
-
-            if (args.isNotEmpty()) {
-                val data = args[0]
-                data?.let {
-                    val listFood: List<Food> =
-                        Gson().fromJson(it.toString(), object : TypeToken<List<Food>>() {}.type)
-                    callback(listFood)
-                } ?: run {
-                    Log.e("tag", "Data received is not a String")
-                }
-            } else {
-                Log.e("tag", "No data received")
-            }
-        }
-    }
 
     fun disconnect(){
         socket.disconnect()
@@ -104,18 +129,6 @@ class SocketManager {
         socket.emit("client:newfood",json)
     }
 
-
-    fun deleteFood(food:String){
-        socket.on("client:newfood", Emitter.Listener {
-
-        })
-    }
-
-    fun emitFood(){
-        socket.on("server:loadfood",Emitter.Listener {
-                Log.e("tag", "data: $it")
-        })
-    }
 
     fun testSocket(txt : String){
         socket.emit("client:test",txt)

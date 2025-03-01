@@ -1,5 +1,6 @@
 package jetpack.julian.ordenpapaapplication.Screen.Menu
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,7 +28,6 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -56,15 +56,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.Screen.Menu.component.CardFood
 import jetpack.julian.ordenpapaapplication.Screen.Menu.component.SalsasComponent
+import jetpack.julian.ordenpapaapplication.core.AddFoodRequest
+import jetpack.julian.ordenpapaapplication.core.Utils.socketManager
+import jetpack.julian.ordenpapaapplication.core.foodDetail
 import jetpack.julian.ordenpapaapplication.core.navigation.Home
+import jetpack.julian.ordenpapaapplication.core.orderNew
 import jetpack.julian.ordenpapaapplication.model.food.Food
 import jetpack.julian.ordenpapaapplication.ui.theme.BgDark
 import jetpack.julian.ordenpapaapplication.ui.theme.Purple40
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuScreen(navHostController: NavHostController, menu: List<Food>, table: Int? = null ) {
+fun MenuScreen(navHostController: NavHostController, menu: List<Food>, table: Int? = null,orderId: Int? = null ) {
     val listFood = menu ?: emptyList()
+    val context = LocalContext.current
     var searchText by remember { mutableStateOf("") }
 
     val sheetState = rememberModalBottomSheetState()
@@ -74,11 +79,7 @@ fun MenuScreen(navHostController: NavHostController, menu: List<Food>, table: In
     var selectedFood by remember { mutableStateOf<Food?>(null) }
 
     var selectedFoods = remember { mutableStateListOf<Food>() }
-
-
     var listOrder: MutableList<Food> = mutableListOf()
-    var orderId: Int? = null
-
 
     val filteredList = listFood.filter { foodItem ->
         foodItem.name.uppercase().contains(searchText.uppercase(), ignoreCase = true)
@@ -87,16 +88,11 @@ fun MenuScreen(navHostController: NavHostController, menu: List<Food>, table: In
     Box(
 
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(BgDark)
         ) {
-                println("table selected "+table)
-            if (table != null){
-                Text(table.toString(), color = Color.Red)
-            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth(1f)
@@ -207,36 +203,23 @@ fun MenuScreen(navHostController: NavHostController, menu: List<Food>, table: In
             ) {
                 OpenSaveOrder(
                     listFoods = selectedFoods,
+                    table = table!!
                 ) {
+                    val listFood = mutableListOf<foodDetail>()
+                    for (item in selectedFoods){
+                        listFood.add(foodDetail(
+                            food_id = item.food_id.toInt(),
+                            extras = listOf("Tomate", "Cebolla")
+                        ))
+                    }
                     if (orderId != null) {
-                        //vamos add producto a una order existente
-                        /*socketManager.newFood(
-                            data = item,
-                            listSalsa = listSelectedSalsa,
-                            amount = price * quantity,
-                            text = "${note.text} ${if (isLlevar) "Es Para LLevar" else ""}",
-                            table = selectedOption.toInt(),
-                            quantity = quantity
-                        )*/
+                        socketManager.addFood(
+                            data = AddFoodRequest(orderId,listFood),
+                        )
                     } else {
-                        //es una nueva order
-
-
-                        /*val listSelectedSalsa: MutableList<String> = mutableListOf()
-                        selectedSalsas.forEachIndexed { index, salsa ->
-                            if (salsa) {
-                                listSelectedSalsa.add(salsas[index])
-                            }
-                        }*/
-
-                        /*socketManager.newFood(
-                            data = item,
-                            listSalsa = listSelectedSalsa,
-                            amount = price * quantity,
-                            text = "${note.text} ${if (isLlevar) "Es Para LLevar" else ""}",
-                            table = selectedOption.toInt(),
-                            quantity = quantity
-                        )*/
+                        socketManager.newOrder(
+                            data = orderNew(user_id = 1, foods = listFood, table = table),
+                        )
                     }
                     navHostController.navigate(Home)
                 }
@@ -250,17 +233,9 @@ fun MenuScreen(navHostController: NavHostController, menu: List<Food>, table: In
 fun OpenAddProduct(foodItem: Food, onDismiss: () -> Unit, saveProduct: (Food) -> Unit) {
 
     var selected by remember { mutableStateOf(false) }
-
-    var price by remember {
-        mutableIntStateOf(foodItem.price.toInt())
-    }
-    var quantity by remember { mutableStateOf(1) }
     var note by remember { mutableStateOf(TextFieldValue("")) }
-    var expanded by remember { mutableStateOf(false) }
     var isLlevar by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("1") }
-    val options = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-
     val scrollState = rememberScrollState()
 
     Column(
@@ -276,32 +251,6 @@ fun OpenAddProduct(foodItem: Food, onDismiss: () -> Unit, saveProduct: (Food) ->
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold
         )
-//            //Button select mesa
-//            Row(
-//                horizontalArrangement = Arrangement.Start,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Button(
-//                    modifier = Modifier.clip(RoundedCornerShape(10.dp)),
-//                    onClick = { expanded = !expanded },
-//                    border = null,
-//                    shape = RectangleShape
-//                ) {
-//                    Row {
-//                        Text(text = "Mesa ", color = Color.Black)
-//                        Text(text = selectedOption, color = Color.Black)
-//                    }
-//                }
-//                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-//                    options.forEach { option ->
-//                        DropdownMenuItem(
-//                            onClick = {
-//                                selectedOption = option
-//                                expanded = false
-//                            },
-//                            text = { Text(text = option) }
-//                        )
-//                    }
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -373,10 +322,14 @@ fun OpenAddProduct(foodItem: Food, onDismiss: () -> Unit, saveProduct: (Food) ->
 
 
 @Composable
-fun OpenSaveOrder(listFoods: List<Food>, clickable: () -> Unit) {
+fun OpenSaveOrder(listFoods: List<Food>,  table: Int, clickable: () -> Unit) {
     Column(
-    modifier = Modifier.fillMaxSize().padding()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding()
     ) {
+        Text("Mesa $table")
+        Spacer(Modifier.height(7.dp))
         Text("Lista de productos")
 
         for (item in listFoods) {

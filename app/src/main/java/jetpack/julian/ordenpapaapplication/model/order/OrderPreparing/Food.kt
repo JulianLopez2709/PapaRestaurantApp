@@ -9,5 +9,4 @@ data class Food(
     val price: Int,
     val type: String,
     val updatedAt: String,
-    val img : String ? = null
 )

@@ -1,9 +1,8 @@
 package jetpack.julian.ordenpapaapplication.Screen.Home
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,28 +35,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.R
 import jetpack.julian.ordenpapaapplication.Screen.Order.OrderScreen
 import jetpack.julian.ordenpapaapplication.core.navigation.Menu
-import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingResponde
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
 import jetpack.julian.ordenpapaapplication.ui.theme.BgDark
 import jetpack.julian.ordenpapaapplication.ui.theme.Principal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController, orders: MutableState<List<OrderPreparingRespondeItem>>) {
+fun HomeScreen(
+    navController: NavHostController,
+    orders: MutableState<List<OrderPreparingRespondeItem>>
+) {
     var selectedItem by remember { mutableIntStateOf(0) }
     val items = listOf("Home", "Menu")
     val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Star)
     val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.Star)
     var showTableDialog by remember { mutableStateOf(false) }
-    println("order list "+orders.value)
+    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier
@@ -107,38 +111,28 @@ fun HomeScreen(navController: NavHostController, orders: MutableState<List<Order
             }
         },
     ) { innerPadding ->
-            OrderScreen(
-                modifier = Modifier
+        OrderScreen(
+            modifier = Modifier
                 .padding(innerPadding)
-                .background(BgDark), orders = orders)
+                .background(BgDark), orders = orders, navController
+        )
     }
 
 
     if (showTableDialog) {
-        TableSelectionDialog(){ table ->
-            println("Menu"+table)
-            //navController.navigate(Menu(table))
+        Dialog(
+            onDismissRequest = {
+                showTableDialog = false
+
+            },
+            properties = DialogProperties(dismissOnClickOutside = true)
+        ) {
+            TableSelectionDialog() { table ->
+                navController.navigate(Menu(table = table, orderId = null))
+            }
         }
     }
 }
 
-
-
-
-@Composable
-fun BuildScreen(modifier: Modifier = Modifier) {
-    Column {
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-        Text(text = "Cualquier cosa")
-    }
-}
 
 
