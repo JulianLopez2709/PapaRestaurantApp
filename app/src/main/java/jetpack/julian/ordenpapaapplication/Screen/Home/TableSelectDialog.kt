@@ -2,6 +2,7 @@ package jetpack.julian.ordenpapaapplication.Screen.Home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -71,22 +72,22 @@ fun TableSelectionDialog(
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(5), // 5 columnas
                     contentPadding = PaddingValues(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     items(10) { index ->
                         val tableNumber = index + 1
                         Box(
                             modifier = Modifier
                                 .clickable {
-                                    println("Dialog"+tableNumber)
                                     onTableSelected(tableNumber)
                                 }
                                 .size(50.dp)
+                                .clip(CircleShape)
                                 .background(
                                     Color.LightGray,
-                                    shape = CircleShape
-                                )
-                                .padding(10.dp),
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(

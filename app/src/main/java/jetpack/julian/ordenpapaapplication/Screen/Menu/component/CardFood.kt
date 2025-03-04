@@ -80,7 +80,7 @@ fun CardFood(item: Food, onClick: (() -> Unit)) {
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Yellow
+                color = Color(0xFFFFE100)
             )
             Text(
                 text = item.description,

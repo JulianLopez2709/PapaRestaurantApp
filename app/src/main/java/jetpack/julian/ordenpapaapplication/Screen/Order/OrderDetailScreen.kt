@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +25,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,15 +38,20 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.R
+import jetpack.julian.ordenpapaapplication.Screen.Component.TotalPrice
 import jetpack.julian.ordenpapaapplication.core.Utils
+import jetpack.julian.ordenpapaapplication.core.Utils.formatPrice
+import jetpack.julian.ordenpapaapplication.core.Utils.toFormattedDate
 import jetpack.julian.ordenpapaapplication.core.navigation.Home
 import jetpack.julian.ordenpapaapplication.core.navigation.Menu
 import jetpack.julian.ordenpapaapplication.core.patch
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
+import jetpack.julian.ordenpapaapplication.ui.theme.Yellow
 
 @Composable
 fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostController) {
@@ -59,6 +67,7 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                 .align(Alignment.TopCenter),
             contentScale = ContentScale.Crop
         )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,6 +103,7 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                 )
             }
         }
+
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -122,7 +132,7 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
                         )
-                        Text(order.createdAt)
+                        Text(order.createdAt.toFormattedDate())
                     }
                     Button(
                         onClick = {
@@ -134,7 +144,7 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                             )
                         },
                         contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(Color.Yellow),
+                        colors = ButtonDefaults.buttonColors(Yellow),
                         shape = CircleShape
                     ) {
                         Icon(
@@ -149,46 +159,73 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                 Spacer(Modifier.height(5.dp))
                 //
                 LazyColumn(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
 
                 ) {
-                    items(order.order_foods) {
-                        Row(
-                            Modifier.fillMaxWidth()
+                    items(order.order_foods) { item ->
+                        Card(
+                            colors = CardDefaults.cardColors(Color.White),
+                            elevation = CardDefaults.cardElevation(6.dp),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
-
+                                Modifier.padding(7.dp)
                             ) {
-                                Text(it.food.name)
-                                Text(it.food.description)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFFFE100))
+                                        )
+                                        Spacer(Modifier.width(10.dp))
+                                        Text(text = item.food.name, fontWeight = FontWeight.Bold)
+                                    }
+                                    Text(
+                                        text = "$${formatPrice(item.food.price.toDouble())}",
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+                                Column(
+                                    Modifier.fillMaxWidth(1f)
+                                ) {
+                                    Row(
+                                        Modifier.fillMaxWidth(0.8f)
+                                    ) {
+                                        Text(
+                                            text = item.extras.joinToString(", "),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                    Text(item.notes.orEmpty())
+                                }
                             }
-                            Text("$${it.food.price}")
                         }
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .border(2.dp, Color.Yellow, RectangleShape)
-                ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(7.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("total x${order.order_foods.size}")
-                        Text("$${order.total_price}")
-                    }
-                }
+                TotalPrice(order.order_foods.size, order.total_price)
                 Row(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button(
-                        modifier = Modifier.clip(RoundedCornerShape(2.dp)),
+                        modifier = Modifier,
+                        shape = RoundedCornerShape(5.dp),
                         onClick = {
                             //order cancelada
                             Utils.socketManager.patchStatus(
@@ -204,10 +241,11 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                     ) {
                         Text("x")
                     }
+                    Spacer(Modifier.width(5.dp))
                     Button(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(5.dp))
                             .fillMaxWidth(),
+                        shape = RoundedCornerShape(5.dp),
                         onClick = {
                             //order completed
                             Utils.socketManager.patchStatus(

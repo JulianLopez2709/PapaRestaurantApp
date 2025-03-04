@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SalsasComponent() {
+fun SalsasComponent(type : String,onSelectionChanged: (List<String>) -> Unit) {
     val salsasFood = listOf(
         "Chipote",
         "Leña",
@@ -42,48 +43,32 @@ fun SalsasComponent() {
         "Chocolate",
         "leche condensada",
     )
-    val selectedSalsas = remember {
-        mutableStateListOf(
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-        )
-    }
+
+
+    val selectedSalsas = remember { mutableStateListOf<String>() }
+
 
     FlowRow (
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalArrangement = Arrangement.spacedBy(0.dp),
-        maxItemsInEachRow = 4,
         overflow = FlowRowOverflow.Clip
     ) {
-        salsasFood.forEachIndexed { index, salsa ->
+        val salsas = if (type == "food") salsasFood else salsasIceCream
+        salsas.forEach { salsa ->
+            val isSelected = selectedSalsas.contains(salsa)
+
             FilterChip(
-                onClick = { selectedSalsas[index] = !selectedSalsas[index] },
-                label = { Text(salsa, color = Color.Black) },
-                selected = selectedSalsas[index],
-                leadingIcon = if (selectedSalsas[index]) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
+                onClick = {
+                    if (selectedSalsas.contains(salsa)) {
+                        selectedSalsas.remove(salsa)
+                    } else {
+                        selectedSalsas.add(salsa)
                     }
-                } else {
-                    null
+                    onSelectionChanged(selectedSalsas.toList())
                 },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = if (selectedSalsas[index]) Color.Yellow else Color.Transparent,
-                )
+                label = { Text(salsa) },
+                selected = selectedSalsas.contains(salsa),
+                modifier = Modifier.padding(bottom = 0.dp)
             )
         }
     }
