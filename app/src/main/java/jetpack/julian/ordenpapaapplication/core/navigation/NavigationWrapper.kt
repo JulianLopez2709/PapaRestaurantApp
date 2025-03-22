@@ -33,9 +33,9 @@ fun NavigationWrapper(orders: MutableState<List<OrderPreparingRespondeItem>>, me
         }
 
         composable<OrderDetail> {
-            val args = it.toRoute<OrderDetail>()
-            val orderJson = Gson().fromJson(args.detail, OrderPreparingRespondeItem::class.java)
-            OrderDetailScreen(orderJson,navController)
+            //val args = it.toRoute<OrderDetail>()
+            //val orderJson = Gson().fromJson(args.detail, OrderPreparingRespondeItem::class.java)
+            OrderDetailScreen(navController)
         }
 
         /*

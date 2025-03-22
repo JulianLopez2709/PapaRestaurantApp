@@ -2,7 +2,6 @@ package jetpack.julian.ordenpapaapplication.Screen.Order
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,8 +24,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +50,7 @@ import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPrepa
 import jetpack.julian.ordenpapaapplication.ui.theme.Yellow
 
 @Composable
-fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostController) {
+fun OrderDetailScreen(navController: NavHostController) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -63,7 +59,7 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.4f)
+                .fillMaxHeight(0.3f)
                 .align(Alignment.TopCenter),
             contentScale = ContentScale.Crop
         )
@@ -91,30 +87,19 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                     modifier = Modifier.size(32.dp)
                 )
             }
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(Color.White)
-            ) {
-                Text(
-                    "Mesa ${order.table}",
-                    modifier = Modifier.padding(7.dp),
-                    fontWeight = FontWeight.Bold
-                )
-            }
         }
 
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .fillMaxHeight(0.65f)
-                .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+                .fillMaxHeight(0.85f)
+                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .background(
                     Color.White
                 )
         ) {
-            Column(
+            /*Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(20.dp)
@@ -135,6 +120,7 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                         Text(order.createdAt.toFormattedDate())
                     }
                     Button(
+                        modifier = Modifier.size(50.dp),
                         onClick = {
                             navController.navigate(
                                 Menu(
@@ -143,9 +129,9 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                                 )
                             )
                         },
-                        contentPadding = PaddingValues(0.dp),
                         colors = ButtonDefaults.buttonColors(Yellow),
-                        shape = CircleShape
+                        shape = CircleShape,
+                        contentPadding = PaddingValues(0.dp),
                     ) {
                         Icon(
                             Icons.Filled.PlayArrow,
@@ -156,63 +142,42 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                     }
                 }
 
-                Spacer(Modifier.height(5.dp))
+                Spacer(Modifier.height(8.dp))
                 //
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
 
                 ) {
                     items(order.order_foods) { item ->
-                        Card(
-                            colors = CardDefaults.cardColors(Color.White),
-                            elevation = CardDefaults.cardElevation(6.dp),
-                            modifier = Modifier.fillMaxWidth()
+
+                        Column(
                         ) {
-                            Column(
-                                Modifier.padding(7.dp)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(10.dp)
-                                                .clip(CircleShape)
-                                                .background(Color(0xFFFFE100))
-                                        )
-                                        Spacer(Modifier.width(10.dp))
-                                        Text(text = item.food.name, fontWeight = FontWeight.Bold)
-                                    }
-                                    Text(
-                                        text = "$${formatPrice(item.food.price.toDouble())}",
-                                        fontWeight = FontWeight.Bold
-                                    )
 
-                                }
+                                Text(text = item.food.name, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = "$${formatPrice(item.food.price.toDouble())}",
+                                    fontWeight = FontWeight.Bold
+                                )
 
-                                Column(
-                                    Modifier.fillMaxWidth(1f)
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(0.8f)
-                                    ) {
-                                        Text(
-                                            text = item.extras.joinToString(", "),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    }
-                                    Text(item.notes.orEmpty())
-                                }
+                            }
+
+                            if (item.extras.isNotEmpty()) {
+                                Text(
+                                    text = item.extras.joinToString(", "),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            if (!item.notes.isNullOrEmpty()) {
+                                Text(item.notes)
                             }
                         }
                     }
@@ -261,7 +226,7 @@ fun OrderDetailScreen(order: OrderPreparingRespondeItem, navController: NavHostC
                         Text("Order Finalizada Correctamente")
                     }
                 }
-            }
+            }*/
         }
     }
 

@@ -1,8 +1,6 @@
 package jetpack.julian.ordenpapaapplication.Screen.Menu
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,18 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -49,15 +43,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import jetpack.julian.ordenpapaapplication.Screen.Menu.component.CardFood
 import jetpack.julian.ordenpapaapplication.Screen.Menu.component.OpenAddProduct
 import jetpack.julian.ordenpapaapplication.Screen.Menu.component.OpenSaveOrder
-import jetpack.julian.ordenpapaapplication.Screen.Menu.component.SalsasComponent
 import jetpack.julian.ordenpapaapplication.core.AddFoodRequest
 import jetpack.julian.ordenpapaapplication.core.SelectFood
 import jetpack.julian.ordenpapaapplication.core.Utils.socketManager
@@ -76,7 +66,9 @@ fun MenuScreen(
     table: Int? = null,
     orderId: Int? = null
 ) {
-    val listFood = menu ?: emptyList()
+    val listFood = menu.filter {
+        it.type == "food" || it.type == "icecream"
+    } ?: emptyList()
     val context = LocalContext.current
     var searchText by remember { mutableStateOf("") }
 
@@ -88,6 +80,7 @@ fun MenuScreen(
 
     var selectedFoods = remember { mutableStateListOf<SelectFood>() }
     var listOrder: MutableList<Food> = mutableListOf()
+    val listToppings = menu.filter { it.type == "topping" }
 
     val filteredList = listFood.filter { foodItem ->
         foodItem.name.uppercase().contains(searchText.uppercase(), ignoreCase = true)
@@ -190,6 +183,7 @@ fun MenuScreen(
             ) {
                 selectedFood?.let {
                     OpenAddProduct(
+                        toppingItems = listToppings,
                         foodItem = it,
                         onDismiss = { showBottomSheet = false },
                         saveProduct = { product, salsas, notes ->

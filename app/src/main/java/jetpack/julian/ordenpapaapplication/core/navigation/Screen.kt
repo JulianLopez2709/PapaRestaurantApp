@@ -19,7 +19,7 @@ object Order;
 
 @Serializable
 data class OrderDetail(
-    val detail : String
+    val detail : String?
 );
 
 @Serializable
