@@ -1,7 +1,9 @@
 package jetpack.julian.ordenpapaapplication.Screen.Order.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -30,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,9 +42,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jetpack.julian.ordenpapaapplication.core.Utils
 import jetpack.julian.ordenpapaapplication.core.Utils.toFormattedDate
-import jetpack.julian.ordenpapaapplication.core.navigation.Menu
 import jetpack.julian.ordenpapaapplication.core.patch
 import jetpack.julian.ordenpapaapplication.model.order.OrderPreparing.OrderPreparingRespondeItem
+import jetpack.julian.ordenpapaapplication.ui.theme.Green
+import jetpack.julian.ordenpapaapplication.ui.theme.Orange
 import jetpack.julian.ordenpapaapplication.ui.theme.Yellow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +63,30 @@ fun CardOrder(item: OrderPreparingRespondeItem, newClick: (OrderPreparingRespond
         colors = CardDefaults.cardColors(containerColor = Color.White)
 
     ) {
+        var status = ""
+        var background = Color.Green
+        when (item.order_status) {
+            "preparing" -> {
+                status = "Cocina"
+                background = Orange
+            }
+
+            "canceled" -> {
+                status = "Cancelado"
+                background = Color.Red
+            }
+
+            "eating" -> {
+                status = "Pendiente"
+                background = Yellow
+            }
+
+            else -> {
+                status = "Finalizado"
+                background = Green
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -71,22 +100,43 @@ fun CardOrder(item: OrderPreparingRespondeItem, newClick: (OrderPreparingRespond
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Orden #${item.order_id}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-
-                Text(
                     text = "Mesa ${item.table}",
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(background),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    Text(
+                        status,
+                        modifier = Modifier.padding(horizontal = 7.dp),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
             }
-            Text(item.createdAt.toFormattedDate(), fontSize = 14.sp)
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(item.createdAt.toFormattedDate(), fontSize = 14.sp)
+
+                Text(
+                    text = "Orden #${item.order_id}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+            Spacer(modifier = Modifier.height(5.dp))
             val foods = item.order_foods
             foods.forEach { food ->
                 Column(
@@ -186,66 +236,90 @@ fun CardOrder(item: OrderPreparingRespondeItem, newClick: (OrderPreparingRespond
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        if (status == "Finalizado" || status == "Cancelado") {
                             Text(
-                                "Opciones de Orden",
+                                "Orden Finalizada",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Gray
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "No es posible agregar productos ni cancelar una orden finalizada.",
+                                textAlign = TextAlign.Center,
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
+                        } else {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "Opciones de Orden",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = "cerrar",
+                                    modifier = Modifier.clickable {
+                                        showSheet = false
+                                    })
+                            }
+                            Text(
+                                "Mesa ${item.table}",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold
                             )
-                            Icon(
-                                Icons.Filled.Close,
-                                contentDescription = "cerrar",
-                                modifier = Modifier.clickable {
+                            Spacer(Modifier.height(10.dp))
+                            Button(
+                                onClick = {
+                                    newClick(
+                                        item
+                                    )
                                     showSheet = false
-                                })
+                                },
+                                colors = ButtonDefaults.buttonColors(Yellow),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Agregar Producto")
+                            }
+                            var statusOnClick = "eating"
+                            if (item.order_status == "eating") {
+                                statusOnClick = "confirmed"
+                            }
+                            Button(
+                                onClick = {
+                                    Utils.socketManager.patchStatus(
+                                        patch(orderId = item.order_id, status = statusOnClick)
+                                    )
+                                    showSheet = false
+                                },
+                                colors = ButtonDefaults.buttonColors(Color.Green),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Finalizar Orden")
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            /*Button(
+                                onClick = {
+                                    Utils.socketManager.patchStatus(
+                                        patch(orderId = item.order_id, status = "canceled")
+                                    )
+                                    showSheet = false
+                                },
+                                colors = ButtonDefaults.buttonColors(Color.Red),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Cancelar Orden")
+                            }*/
+
                         }
-                        Spacer(Modifier.height(10.dp))
-
-
-                        Button(
-                            onClick = {
-                                newClick(
-                                    item
-                                )
-                                showSheet = false
-                            },
-                            colors = ButtonDefaults.buttonColors(Yellow),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Agregar Prodcuto")
-                        }
-
-                        Button(
-                            onClick = {
-                                Utils.socketManager.patchStatus(
-                                    patch(orderId = item.order_id, status = "confirmed")
-                                )
-                                showSheet = false
-                            },
-                            colors = ButtonDefaults.buttonColors(Color.Green),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Finalizar Orden")
-                        }
-
-                        Button(
-                            onClick = {
-                                Utils.socketManager.patchStatus(
-                                    patch(orderId = item.order_id, status = "canceled")
-                                )
-                                showSheet = false
-                            },
-                            colors = ButtonDefaults.buttonColors(Color.Red),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Cancelar Orden")
-                        }
-
                     }
+
                 }
             }
 

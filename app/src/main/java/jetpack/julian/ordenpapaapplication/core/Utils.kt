@@ -10,7 +10,7 @@ import java.util.TimeZone
 
 object Utils {
     var useFood: List<Food> = emptyList()
-    val BASE_URL = "https://lapapaback.onrender.com"
+    val BASE_URL = "http://192.168.20.16:3001"
     lateinit var socketManager: SocketManager
 
     fun formatPrice (price:Double): String {

@@ -67,7 +67,7 @@ fun MenuScreen(
     orderId: Int? = null
 ) {
     val listFood = menu.filter {
-        it.type == "food" || it.type == "icecream"
+        it.type == "food" || it.type == "icecream" || it.type == "drink"
     } ?: emptyList()
     val context = LocalContext.current
     var searchText by remember { mutableStateOf("") }

@@ -79,7 +79,8 @@ fun OpenAddProduct(
                 selectedSalsas.clear()
                 selectedSalsas.addAll(selected)
             }
-            if (foodItem.type == "food") {
+
+            /*if (foodItem.type == "food") {
                 Text("Toppings")
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -124,7 +125,7 @@ fun OpenAddProduct(
                         }
                     }
                 }
-            }
+            }*/
 
         }
 

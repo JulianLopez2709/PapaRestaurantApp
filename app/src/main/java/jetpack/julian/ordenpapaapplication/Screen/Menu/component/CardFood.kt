@@ -59,7 +59,7 @@ fun CardFood(item: Food, onClick: (() -> Unit)) {
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.Start,
         ) {
-            val imageRes = when(item.type){
+            /*val imageRes = when(item.type){
                 "drink"-> R.drawable.drink
                 "icecream" -> R.drawable.icecream
                 else -> R.drawable.fries
@@ -73,7 +73,7 @@ fun CardFood(item: Food, onClick: (() -> Unit)) {
                     .fillMaxWidth()
                     .height(34.dp)
                     .clip(RoundedCornerShape(8.dp))
-            )
+            )*/
 
             Text(
                 text = item.name,
