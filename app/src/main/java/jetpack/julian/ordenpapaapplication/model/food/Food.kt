@@ -12,3 +12,11 @@ data class Food(
     val img: String ? = null,
 )
 
+enum class FoodType(val type: String) {
+    FOOD("food"),
+    DRINK("drink"),
+    EXTRAS("extras"),
+    SALSAS("salsas"),
+}
+
+

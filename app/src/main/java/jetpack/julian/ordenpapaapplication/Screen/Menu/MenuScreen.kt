@@ -82,6 +82,8 @@ fun MenuScreen(
     var listOrder: MutableList<Food> = mutableListOf()
     val listToppings = menu.filter { it.type == "topping" }
 
+    val TotalPrice = remember { mutableStateOf(0.0) }
+
     val filteredList = listFood.filter { foodItem ->
         foodItem.name.uppercase().contains(searchText.uppercase(), ignoreCase = true)
     }
@@ -186,12 +188,13 @@ fun MenuScreen(
                         toppingItems = listToppings,
                         foodItem = it,
                         onDismiss = { showBottomSheet = false },
-                        saveProduct = { product, salsas, notes ->
+                        saveProduct = { product, salsas, notes, price ->
                             selectedFoods.add(
                                 SelectFood(
                                     food = product,
                                     salsas = salsas,
-                                    notes = notes
+                                    notes = notes,
+                                    totalPrice = price,
                                 )
                             )
                         }
@@ -218,21 +221,23 @@ fun MenuScreen(
                 ) {
                     val listFood = mutableListOf<foodDetail>()
                     for (item in selectedFoods) {
+                        TotalPrice.value += item.totalPrice
                         listFood.add(
                             foodDetail(
                                 food_id = item.food.food_id.toInt(),
                                 extras = item.salsas,
-                                notes = item.notes
+                                notes = item.notes,
+                                totalPrice = item.totalPrice
                             )
                         )
                     }
                     if (orderId != null) {
                         socketManager.addFood(
-                            data = AddFoodRequest(orderId, listFood),
+                            data = AddFoodRequest(orderId, listFood, total_price = TotalPrice.value),
                         )
                     } else {
                         socketManager.newOrder(
-                            data = orderNew(user_id = 1, foods = listFood, table = table),
+                            data = orderNew(user_id = 1, foods = listFood, table = table,total_price = TotalPrice.value),
                         )
                     }
                     navHostController.navigate(Home)

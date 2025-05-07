@@ -45,15 +45,44 @@ fun OpenAddProduct(
     toppingItems: List<Food>,
     foodItem: Food,
     onDismiss: () -> Unit,
-    saveProduct: (Food, List<String>, String?) -> Unit
+    saveProduct: (Food, List<String>, String?, TotalPrice : Double) -> Unit
 ) {
 
     var notes by remember { mutableStateOf("") }
     var isLlevar by remember { mutableStateOf(false) }
     val selectedSalsas = remember { mutableStateListOf<String>() }
+    val totalPrice = remember { mutableStateOf(0.0) }
     val selectedToppings = remember { mutableStateOf(mutableSetOf<Food>()) }
 
     val scrollState = rememberScrollState()
+
+    fun saveTopping() {
+        totalPrice.value = foodItem.price
+        selectedToppings.value.forEach { topping ->
+            totalPrice.value += topping.price
+            when (topping.name) {
+                "Carne desmechada" -> notes += "Extra Carne Desmechada, "
+                "Pollo desmechado" -> notes += "Extra Pollo Desmechado, "
+                "Pollo crunch" -> notes += "Extra Pollo crunch, "
+                "Chicharrón" -> notes += "Extra Chicharrón, "
+                "Camarones" -> notes += "Extra Camarones, "
+                "Tocineta" -> notes += "Extra Tocineta, "
+                "Salchicha" -> notes += "Extra Salchicha, "
+                "Chorizo" -> notes += "Extra Chorizo, "
+                "Costilla" -> notes += "Extra Costilla, "
+                "Huevos de codorniz (3)" -> notes += "Extra Huevos de codorniz (3), "
+                "Madurito" -> notes += "Extra Madurito, "
+                "Maicitos" -> notes += "Extra Maicitos, "
+                "Queso mozzarella" -> notes += "Extra Queso mozzarella, "
+                "Pico de gallo" -> notes += "Extra Pico de gallo, "
+                "Porción de papa" -> notes += "Extra Porción de papa, "
+                "Porción de papa criolla" -> notes += "Extra Porción de papa criolla, "
+                else -> ""
+            }
+        }
+        saveProduct(foodItem, selectedSalsas, notes, totalPrice.value)
+        onDismiss()
+    }
 
     Column(
         modifier = Modifier
@@ -80,7 +109,7 @@ fun OpenAddProduct(
                 selectedSalsas.addAll(selected)
             }
 
-            /*if (foodItem.type == "food") {
+            if (foodItem.type == "food") {
                 Text("Toppings")
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -116,7 +145,7 @@ fun OpenAddProduct(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                "$${it.price.toInt()}",
+                                "$${it.price}",
                                 modifier = Modifier,
                                 lineHeight = 2.sp,
                                 color = Color.Black,
@@ -125,7 +154,7 @@ fun OpenAddProduct(
                         }
                     }
                 }
-            }*/
+            }
 
         }
 
@@ -155,9 +184,7 @@ fun OpenAddProduct(
             shape = RectangleShape,
             colors = ButtonDefaults.buttonColors(Color.Black),
             onClick = {
-                //foodItem.price += 0
-                saveProduct(foodItem, selectedSalsas, notes)
-                onDismiss()
+                saveTopping()
             }
         ) {
             Text(

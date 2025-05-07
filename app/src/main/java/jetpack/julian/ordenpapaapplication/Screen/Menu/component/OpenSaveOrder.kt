@@ -104,7 +104,7 @@ fun OpenSaveOrder(
                         ) {
                             Text(text = item.food.name, fontWeight = FontWeight.Bold)
                             Text(
-                                text = "$${item.food.price.toInt()}",
+                                text = "$${item.totalPrice.toInt()}",
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -132,7 +132,7 @@ fun OpenSaveOrder(
         }
         var totalPrice = 0.0
         for (item in listFoods) {
-            totalPrice += item.food.price
+            totalPrice += item.totalPrice
         }
         TotalPrice(listFoods.size, totalPrice.toInt())
 

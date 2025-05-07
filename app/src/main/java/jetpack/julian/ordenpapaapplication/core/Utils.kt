@@ -10,7 +10,7 @@ import java.util.TimeZone
 
 object Utils {
     var useFood: List<Food> = emptyList()
-    val BASE_URL = "http://192.168.20.16:3001"
+    val BASE_URL = "http://192.168.20.21:3001"
     lateinit var socketManager: SocketManager
 
     fun formatPrice (price:Double): String {
@@ -33,25 +33,30 @@ object Utils {
 data class SelectFood(
     val food: Food,
     val salsas : List<String>,
-    val notes : String?
+    val notes : String?,
+    val totalPrice : Double = food.price,
 )
 
 data class orderNew(
     val table : Int,
     val user_id : Int,
-    val foods :List<foodDetail>
+    val foods :List<foodDetail>,
+    val total_price : Double = 0.0
 )
 
 data class AddFoodRequest(
     val order_id : Int,
-    val foods :List<foodDetail>
+    val foods :List<foodDetail>,
+    val total_price : Double = 0.0
+
 )
 
 //Respondes about web socket
 data class foodDetail(
     val food_id:Int,
     val extras: List<String>,
-    val notes : String?
+    val notes : String?,
+    val totalPrice : Double = 0.0
 )
 
 data class patch(
